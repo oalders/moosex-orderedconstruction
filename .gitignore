@@ -1,0 +1,6 @@
+.build
+local/
+/MooseX-OrderedConstruction*
+*.sw*
+.tidyall.d/
+tidyall.ERR
