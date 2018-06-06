@@ -17,12 +17,14 @@ has set_me => (
 has read_me => (
     is      => 'ro',
     isa     => 'Str',
-    default => sub {
-        my $self = shift;
+    builder => '_build_read_me',
+);
+use experimental 'signatures';
+sub _build_read_me ($self) {
+	$::was_set = 1;
         $self->was_set( $self->set_me );
         return $self->set_me;
-    },
-);
+    }
 
 has was_set => (
     is  => 'rw',
@@ -35,9 +37,13 @@ package main;
 
 use Test::More;
 
+do { 
+	$::was_set = 0;
 my $ordered = Local::Ordered->new( set_me => 'donuts' );
+ok $::was_set;
 ok( $ordered->set_me,  'set_me' );
 ok( $ordered->read_me, 'read_me' );
 ok( $ordered->was_set, 'was_set' );
+} for 1..10;
 
 done_testing();

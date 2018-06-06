@@ -11,8 +11,8 @@ has is_implicitly_lazy => (
 after _process_options => sub {
     my ( $class, $name, $options ) = @_;
 
-    #$options->{is_implicitly_lazy} = !$options->{lazy};
-    $options->{lazy}               = 1;
+    $options->{is_implicitly_lazy} = !$options->{lazy};
+    $options->{lazy}               = 1 if $options->{default} || $options->{builder};
 };
 
 package    # hide
