@@ -27,6 +27,17 @@ sub _build_read_me {
     return $self->set_me;
 }
 
+has read_me_with_default => (
+    is      => 'ro',
+    isa     => 'Str',
+    default => sub {
+        my $self = shift;
+        $::was_set_via_default = 1;
+        $self->was_set( $self->set_me );
+        return $self->set_me;
+    },
+);
+
 has was_set => (
     is  => 'rw',
     isa => 'Str',
@@ -49,10 +60,13 @@ for my $i ( 0 .. 9 ) {
 
 sub test_object {
     $::was_set = 0;
+    $::was_set_via_default = 0;
     my $ordered = Local::Ordered->new( set_me => 'donuts' );
-    ok $::was_set;
+    ok( $::was_set, 'was_set' );
+    ok( $::was_set_via_default, 'was_set_via_default' );
     ok( $ordered->set_me,  'set_me' );
     ok( $ordered->read_me, 'read_me' );
+    ok( $ordered->read_me_with_default, 'read_me_with_default' );
     ok( $ordered->was_set, 'was_set' );
 }
 
