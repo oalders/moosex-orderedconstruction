@@ -17,22 +17,22 @@ around _inline_BUILDALL => sub ( $orig, $self, @args ) {
     my @attrs = sort_by { $_->name } $self->get_all_attributes;
     return (
         $self->$orig(@args),
-        pairmap  { _inline_read($b, $a) }
-        pairgrep { $b->is_implicitly_lazy } %attrs[0..$#attrs]
+        pairmap { _inline_read( $b, $a ) }
+        pairgrep { $b->is_implicitly_lazy } %attrs[ 0 .. $#attrs ]
     );
 };
 
-sub _inline_read ($attr, $idx) {
-    sprintf 'sub { %s }->();' => join q{} =>
-	($attr->has_default
-		? ("my \$attr_default = \$defaults->[$idx];")
-		: ()
-	),
+sub _inline_read ( $attr, $idx ) {
+    sprintf 'sub { %s }->();' => join q{} => (
+        $attr->has_default
+        ? ("my \$attr_default = \$defaults->[$idx];")
+        : ()
+        ),
         $attr->_inline_get_value(
         '$instance',
-	"\$type_constraint_bodies[$idx]",
-	"\$type_coercions[$idx]",
-	"\$type_constraint_messages[$idx]",
+        "\$type_constraint_bodies[$idx]",
+        "\$type_coercions[$idx]",
+        "\$type_constraint_messages[$idx]",
         );
 }
 
