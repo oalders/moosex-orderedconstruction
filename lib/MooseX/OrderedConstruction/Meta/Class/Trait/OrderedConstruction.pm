@@ -3,6 +3,7 @@ package MooseX::OrderedConstruction::Meta::Class::Trait::OrderedConstruction;
 ## no critic (Subroutines::ProhibitSubroutinePrototypes)
 
 use Moose::Role;
+use List::AllUtils 'pairmap';
 
 use experimental 'signatures';
 around new_object => sub ( $orig, $self, @args ) {
@@ -31,14 +32,14 @@ sub _inline_read ($attr) {
 }
 
 sub _attr_env ($attr_name, $env_name) {
-    sprintf '${$attr_envs->{%s}->{q[%s]}}' => B::perlstring($attr_name), $env_name
+    sprintf '$attr_envs->{%s}->{q[%s]}' => B::perlstring($attr_name), $env_name
 }
 
 around _eval_environment => sub ( $orig, $self, @args ) {
     +{
         $self->$orig(@args)->%*,
         '$attr_envs' => \{
-            map { $_->name => $_->_eval_environment }
+            map { $_->name => { pairmap { $a => $$b } $_->_eval_environment->%* } }
                 $self->get_all_attributes
         }
     };
