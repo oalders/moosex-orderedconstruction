@@ -35,6 +35,26 @@ has foo => (
 );
 
 1;
+
+package Local::Coercion;
+
+use Moose;
+use MooseX::OrderedConstruction;
+use Moose::Util::TypeConstraints;
+
+coerce 'Num',
+    from 'ArrayRef',
+    via { $_->[0] };
+
+has foo => (
+    is      => 'ro',
+    isa     => 'Num',
+    default => sub { return ['NOTANUMBER'] },
+    coerce  => 1,
+);
+
+1;
+
 package main;
 
 like(
@@ -45,6 +65,11 @@ like(
 like(
     exception( sub { Local::Message->new } ),
     qr{was not a positive number}
+);
+
+like(
+    exception( sub { Local::Coercion->new } ),
+    qr{Validation failed for 'Num' with value NOTANUMBER}
 );
 
 done_testing();
