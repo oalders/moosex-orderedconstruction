@@ -7,15 +7,6 @@ use Moose ();
 use Moose::Exporter;
 use Moose::Util::MetaRole;
 
-Moose::Exporter->setup_import_methods( also => 'Moose' );
-
-sub init_meta {
-    shift;
-    my %args = @_;
-    Moose->init_meta(%args);
-    return $args{for_class}->meta;
-}
-
 my %metaroles = (
     class_metaroles => {
         attribute => [
