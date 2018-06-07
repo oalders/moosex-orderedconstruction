@@ -21,7 +21,7 @@ around _inline_BUILDALL => sub ( $orig, $self, @args ) {
 };
 
 sub _inline_read ($attr) {
-    sprintf 'sub { %s }->(); }' => join q{ } =>
+    sprintf 'sub { %s }->();' => join q{} =>
         $attr->_inline_get_value('$_[0]');
 }
 
