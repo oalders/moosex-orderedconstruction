@@ -9,21 +9,10 @@ use Moose::Util::MetaRole;
 
 Moose::Exporter->setup_import_methods( also => 'Moose' );
 
-# Class::MOP::Class->_inline_slot_initializers
-# Moose::Meta::Class->new_object
-
-# override _inline_new_object and simply replace the call to
-# $self->_inline_slot_initializers
-
 sub init_meta {
     shift;
     my %args = @_;
-
-    use DDP;
-    p %args;
-
     Moose->init_meta(%args);
-
     return $args{for_class}->meta;
 }
 
