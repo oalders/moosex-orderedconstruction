@@ -22,7 +22,7 @@ around _inline_BUILDALL => sub ( $orig, $self, @args ) {
 
 sub _inline_read ($attr) {
     sprintf 'sub { %s }->();' => join q{} =>
-        $attr->_inline_get_value('$_[0]');
+        $attr->_inline_get_value('$instance');
 }
 
 around _eval_environment => sub ( $orig, $self, @args ) {
