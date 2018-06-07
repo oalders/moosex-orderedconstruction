@@ -17,12 +17,12 @@ around _inline_BUILDALL => sub ( $orig, $self, @args ) {
     my @attrs = sort_by { $_->name } $self->get_all_attributes;
     return (
         $self->$orig(@args),
-        pairmap  { $self->_inline_read($b, $a) }
+        pairmap  { _inline_read($b, $a) }
         pairgrep { $b->is_implicitly_lazy } %attrs[0..$#attrs]
     );
 };
 
-sub _inline_read ($self, $attr, $idx) {
+sub _inline_read ($attr, $idx) {
     sprintf 'sub { %s }->();' => join q{} =>
 	($attr->has_default
 		? ("my \$attr_default = \$defaults->[$idx];")
