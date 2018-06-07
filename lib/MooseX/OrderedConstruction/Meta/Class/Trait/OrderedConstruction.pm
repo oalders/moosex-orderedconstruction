@@ -3,7 +3,7 @@ package MooseX::OrderedConstruction::Meta::Class::Trait::OrderedConstruction;
 ## no critic (Subroutines::ProhibitSubroutinePrototypes)
 
 use Moose::Role;
-use List::AllUtils 'pairmap', 'pairgrep', 'zip';
+use List::AllUtils 'pairmap', 'pairgrep', 'zip', 'sort_by';
 
 use experimental 'signatures';
 around new_object => sub ( $orig, $self, @args ) {
@@ -14,40 +14,26 @@ around new_object => sub ( $orig, $self, @args ) {
 };
 
 around _inline_BUILDALL => sub ( $orig, $self, @args ) {
-	    my @attrs = $self->get_all_attributes;
+    my @attrs = sort_by { $_->name } $self->get_all_attributes;
     return (
         $self->$orig(@args),
-        pairmap      { _inline_read($a, $b) }
-            pairgrep { $a->is_implicitly_lazy } &zip(\@attrs, [0..$#attrs]),
+        pairmap  { $self->_inline_read($a, $b) }
+        pairgrep { $a->is_implicitly_lazy } &zip(\@attrs, [0..$#attrs]),
     );
 };
 
-sub _inline_read ($attr, $idx) {
-    sprintf 'sub { my $attr_default = %s; %s }->();' =>
-        _attr_env( $attr->name, '$attr_default' ),
-        join q{} => $attr->_inline_get_value(
+sub _inline_read ($self, $attr, $idx) {
+    sprintf 'sub { %s }->();' => join q{} =>
+	($attr->has_default
+		? ("my \$attr_default = \$defaults->[$idx];")
+		: ()
+	),
+        $attr->_inline_get_value(
         '$instance',
 	"\$type_constraint_bodies[$idx]",
 	"\$type_coercions[$idx]",
 	"\$type_constraint_messages[$idx]",
         );
 }
-
-sub _attr_env ( $attr_name, $env_name ) {
-    sprintf '$attr_envs->{%s}->{q[%s]}' => B::perlstring($attr_name),
-        $env_name;
-}
-
-around _eval_environment => sub ( $orig, $self, @args ) {
-    +{
-        $self->$orig(@args)->%*,
-        '$attr_envs' => \{
-            map {
-                $_->name =>
-                    { pairmap { $a => $$b } $_->_eval_environment->%* }
-            } $self->get_all_attributes
-        }
-    };
-};
 
 1;
