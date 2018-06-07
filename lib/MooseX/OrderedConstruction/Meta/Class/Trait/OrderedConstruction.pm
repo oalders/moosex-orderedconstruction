@@ -3,7 +3,7 @@ package MooseX::OrderedConstruction::Meta::Class::Trait::OrderedConstruction;
 ## no critic (Subroutines::ProhibitSubroutinePrototypes)
 
 use Moose::Role;
-use List::AllUtils 'pairmap';
+use List::AllUtils 'pairmap', 'pairgrep', 'zip';
 
 use experimental 'signatures';
 around new_object => sub ( $orig, $self, @args ) {
@@ -14,21 +14,22 @@ around new_object => sub ( $orig, $self, @args ) {
 };
 
 around _inline_BUILDALL => sub ( $orig, $self, @args ) {
+	    my @attrs = $self->get_all_attributes;
     return (
         $self->$orig(@args),
-        map      { _inline_read($_) }
-            grep { $_->is_implicitly_lazy } $self->get_all_attributes
+        pairmap      { _inline_read($a, $b) }
+            pairgrep { $a->is_implicitly_lazy } &zip(\@attrs, [0..$#attrs]),
     );
 };
 
-sub _inline_read ($attr) {
+sub _inline_read ($attr, $idx) {
     sprintf 'sub { my $attr_default = %s; %s }->();' =>
         _attr_env( $attr->name, '$attr_default' ),
         join q{} => $attr->_inline_get_value(
         '$instance',
-        _attr_env( $attr->name, '$type_constraint' ),
-        _attr_env( $attr->name, '$type_coercion' ),
-        _attr_env( $attr->name, '$type_message' ),
+	"\$type_constraint_bodies[$idx]",
+	"\$type_coercions[$idx]",
+	"\$type_constraint_messages[$idx]",
         );
 }
 
