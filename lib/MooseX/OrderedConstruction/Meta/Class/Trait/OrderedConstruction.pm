@@ -5,15 +5,16 @@ package MooseX::OrderedConstruction::Meta::Class::Trait::OrderedConstruction;
 use Moose::Role;
 use List::AllUtils 'pairmap', 'pairgrep', 'sort_by', 'zip';
 
-use experimental 'signatures';
-around new_object => sub ( $orig, $self, @args ) {
+around new_object => sub {
+    my ( $orig, $self, @args ) = @_;
     my $obj = $self->$orig(@args);
     $_->get_value( $obj, 0 )
         for grep { $_->is_implicitly_lazy } $self->get_all_attributes;
     return $obj;
 };
 
-around _inline_BUILDALL => sub ( $orig, $self, @args ) {
+around _inline_BUILDALL => sub {
+    my ( $orig, $self, @args ) = @_;
     my @attrs = sort_by { $_->name } $self->get_all_attributes;
     return (
         $self->$orig(@args),
@@ -22,7 +23,8 @@ around _inline_BUILDALL => sub ( $orig, $self, @args ) {
     );
 };
 
-sub _inline_read ( $attr, $idx ) {
+sub _inline_read {
+    my ( $attr, $idx ) = @_;
     sprintf 'sub { %s }->();' => join q{} => (
         $attr->has_default
         ? ("my \$attr_default = \$defaults->[$idx];")
