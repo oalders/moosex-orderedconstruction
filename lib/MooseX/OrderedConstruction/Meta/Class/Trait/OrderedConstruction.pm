@@ -3,7 +3,7 @@ package MooseX::OrderedConstruction::Meta::Class::Trait::OrderedConstruction;
 ## no critic (Subroutines::ProhibitSubroutinePrototypes)
 
 use Moose::Role;
-use List::AllUtils 'pairmap', 'pairgrep', 'sort_by';
+use List::AllUtils 'pairmap', 'pairgrep', 'sort_by', 'zip';
 
 use experimental 'signatures';
 around new_object => sub ( $orig, $self, @args ) {
@@ -17,8 +17,8 @@ around _inline_BUILDALL => sub ( $orig, $self, @args ) {
     my @attrs = sort_by { $_->name } $self->get_all_attributes;
     return (
         $self->$orig(@args),
-        pairmap { _inline_read( $b, $a ) }
-        pairgrep { $b->is_implicitly_lazy } %attrs[ 0 .. $#attrs ]
+        pairmap { _inline_read( $a, $b ) }
+        pairgrep { $a->is_implicitly_lazy } &zip( \@attrs, [ 0 .. $#attrs ] )
     );
 };
 
