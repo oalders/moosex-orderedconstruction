@@ -22,13 +22,22 @@ around _inline_BUILDALL => sub ( $orig, $self, @args ) {
 
 sub _inline_read ($attr) {
     sprintf 'sub { %s }->();' => join q{} =>
-        $attr->_inline_get_value('$instance');
+        $attr->_inline_get_value(
+		'$instance',
+		_attr_env($attr->name, '$type_constraint'),
+		_attr_env($attr->name, '$type_coercion'),
+		_attr_env($attr->name, '$type_message'),
+	);
+}
+
+sub _attr_env ($attr_name, $env_name) {
+    sprintf '${$attr_envs->{%s}->{q[%s]}}' => B::perlstring($attr_name), $env_name
 }
 
 around _eval_environment => sub ( $orig, $self, @args ) {
     +{
         $self->$orig(@args)->%*,
-        '$attr_envs' => {
+        '$attr_envs' => \{
             map { $_->name => $_->_eval_environment }
                 $self->get_all_attributes
         }
