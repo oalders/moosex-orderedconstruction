@@ -38,14 +38,22 @@ package main;
 
 use Test::More;
 
-do {
+for my $i ( 0 .. 9 ) {
+    subtest "object iteration $i" => sub { test_object() };
+}
+
+Local::Ordered->meta->make_immutable;
+for my $i ( 0 .. 9 ) {
+    subtest "inlined object iteration $i" => sub { test_object() };
+}
+
+sub test_object {
     $::was_set = 0;
     my $ordered = Local::Ordered->new( set_me => 'donuts' );
     ok $::was_set;
     ok( $ordered->set_me,  'set_me' );
     ok( $ordered->read_me, 'read_me' );
     ok( $ordered->was_set, 'was_set' );
-    }
-    for 1 .. 10;
+}
 
 done_testing();
