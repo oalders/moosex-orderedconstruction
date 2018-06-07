@@ -1,5 +1,7 @@
 package MooseX::OrderedConstruction::Meta::Class::Trait::OrderedConstruction;
 
+## no critic (Subroutines::ProhibitSubroutinePrototypes)
+
 use Moose::Role;
 
 use experimental 'signatures';
