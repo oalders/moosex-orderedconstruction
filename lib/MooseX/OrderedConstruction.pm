@@ -5,7 +5,6 @@ package MooseX::OrderedConstruction;
 
 use Moose ();
 use Moose::Exporter;
-use Moose::Util::MetaRole;
 
 my %metaroles = (
     class_metaroles => {
