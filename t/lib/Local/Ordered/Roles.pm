@@ -1,8 +1,7 @@
 package Local::Ordered::Roles;
 
 use Moose::Role;
-
-our ( $was_set, $was_set_via_default );
+use MooseX::OrderedConstruction;
 
 has set_me => (
     is       => 'ro',
@@ -18,8 +17,7 @@ has read_me => (
 
 sub _build_read_me {
     my $self = shift;
-    $was_set = 1;
-    $self->was_set( $self->set_me );
+    our $was_set = 1;
     return $self->set_me;
 }
 
@@ -28,15 +26,9 @@ has read_me_with_default => (
     isa     => 'Str',
     default => sub {
         my $self = shift;
-        $was_set_via_default = 1;
-        $self->was_set( $self->set_me );
+        our $was_set_via_default = 1;
         return $self->set_me;
     },
-);
-
-has was_set => (
-    is  => 'rw',
-    isa => 'Str',
 );
 
 1;
