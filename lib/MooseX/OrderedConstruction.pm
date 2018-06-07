@@ -29,3 +29,5 @@ $metaroles{role_metaroles} = {
 
 Moose::Exporter->setup_import_methods(%metaroles);
 1;
+
+# ABSTRACT: Initialize Moose attributes in a predictable order
