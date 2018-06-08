@@ -6,8 +6,7 @@ addons:
       - aspell-en
 before_install:
   - 'eval $(curl https://travis-perl.github.io/init) --auto'
-  - 'cpanm Code::TidyAll::Plugin::SortLines::Naturally Code::TidyAll::Plugin::UniqueLines || find /home/travis/.cpanm/work | grep build.log | xargs cat'
-  - 'cpanm Perl::Tidy'
+  - 'AUTHOR_TESTING=0 cpanm Perl::Tidy Code::TidyAll::Plugin::SortLines::Naturally Code::TidyAll::Plugin::UniqueLines || find /home/travis/.cpanm/work | grep build.log | xargs cat'
 cache:
   directories:
     - local
