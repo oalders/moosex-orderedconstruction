@@ -32,9 +32,9 @@ Moose::Exporter->setup_import_methods(%metaroles);
 =head1 DESCRIPTION
 
 This module allows you to not worry about attribute initialisation order in
-your Moose constructors. It does so by considering all attributes to be lazy,
-and forcing generation of attribute values from defaults and builders that
-aren't explicitly lazy at the end of the construction stage.
+your Moose constructors. It does so by implicitly considering all attributes to
+be lazy, and forcing generation of attribute values from defaults and builders
+that aren't explicitly lazy at the end of the construction stage.
 
 As such, it automates the following common pattern:
 
