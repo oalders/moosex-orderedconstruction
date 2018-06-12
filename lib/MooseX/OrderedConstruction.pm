@@ -47,6 +47,6 @@ As such, it automates the following common pattern:
   );
 
   # also not necessary with this module
-  sub BUILD ($) { $self->foo } # force "foo" value to be built during construction
+  sub BUILD ($self) { $self->foo } # force "foo" value to be built during construction
 
 =cut
