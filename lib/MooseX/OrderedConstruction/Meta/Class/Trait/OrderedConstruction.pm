@@ -1,8 +1,7 @@
 package MooseX::OrderedConstruction::Meta::Class::Trait::OrderedConstruction;
 
-## no critic (Subroutines::ProhibitSubroutinePrototypes)
-
 use Moose::Role;
+
 use List::AllUtils 'pairmap', 'pairgrep', 'sort_by', 'zip';
 
 around new_object => sub {
